@@ -60,5 +60,19 @@
         'deps/libuv/include',
       ]
     },
+  }, {
+    'target_name': 'test',
+    'type': 'none',
+    'dependencies': [
+      'libuvlua'
+    ],
+    'copies': [
+      {
+        'destination': '<(PRODUCT_DIR)',
+        'files': [
+          'tests/test-ping-pong.lua',
+        ],
+      },
+    ],
   }],
 }
