@@ -3,6 +3,8 @@ libuv lua binding
 
 # Installation
 
+    $ ./configure
+    $ make -C out
 
 # Example
 
