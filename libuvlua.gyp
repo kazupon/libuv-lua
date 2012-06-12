@@ -14,7 +14,7 @@
     ],
     'sources': [
       'common.gypi',
-      'src/libuv-lua.c',
+      'src/libuv_lua.c',
     ],
     'defines': [
       'LIBUV_VERSION="<!(git --git-dir deps/libuv/.git describe --all --tags --always --long)"',

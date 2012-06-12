@@ -1,5 +1,7 @@
 libuv = require('libuvlua')
 
+libuv.hello()
+
 local server_closed = false
 
 local loop = libuv.Loop.default
