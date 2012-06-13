@@ -9,16 +9,10 @@
   'variables': {
     #'target_arch%': 'ia32',          # set lua's target architecture
     #'host_arch%': 'ia32',            # set lua's host architecture
-    'libuvlua_debug': 'true',
   },
 
   'target_defaults': {
-    'default_configuration': 'Release',
-    'conditions': [
-      ['libuvlua_debug', {
-          'default_configuration': 'Debug'
-      }],
-    ],
+    #'default_configuration': 'Debug',
     'configurations': {
       'Debug': {
         'defines': [ 'DEBUG', '_DEBUG' ],

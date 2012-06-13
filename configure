@@ -121,6 +121,8 @@ def configure_libuv_lua(o):
   o['variables']['libuvlua_prefix'] = options.prefix if options.prefix else ''
   o['variables']['host_arch'] = host_arch()
   o['variables']['target_arch'] = options.arch if options.arch else target_arch()
+  o['default_configuration'] = 'Debug' if options.debug else 'Release'
+
 
   t_os = gyp.common.GetFlavor({})
   t_arch = o['variables']['target_arch']
