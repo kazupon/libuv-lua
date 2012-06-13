@@ -4,7 +4,7 @@ libuv.hello()
 
 local server_closed = false
 
-local loop = libuv.Loop.default
+local loop = libuv.Loop.get_default()
 assert(loop, 'event loop create error !!')
 
 local tcp_server = libuv.Tcp:new(loop)
