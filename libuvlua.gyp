@@ -70,6 +70,7 @@
       {
         'destination': '<(PRODUCT_DIR)',
         'files': [
+          'tests/test-loop.lua',
           'tests/test-ping-pong.lua',
         ],
       },
