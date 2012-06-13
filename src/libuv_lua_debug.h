@@ -1,3 +1,8 @@
+/*
+ * Debugging utilities.
+ * Copyright (C) 2012 kazuya kawaguchi. See Copyright Notice in libuv_lua.h
+ */
+
 #ifndef LIBUV_LUA_DEBUG_H
 #define LIBUV_LUA_DEBUG_H
 

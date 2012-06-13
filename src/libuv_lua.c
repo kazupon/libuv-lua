@@ -1,3 +1,9 @@
+/*
+ * main module
+ * Copyright (C) 2012 kazuya kawaguchi. See Copyright Notice in libuv_lua.h
+ */
+
+
 #include "libuv_lua.h"
 
 #include <stdio.h>
