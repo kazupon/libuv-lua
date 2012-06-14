@@ -6,8 +6,6 @@
 #include "libuv_lua_debug.h"
 
 #include <stdio.h>
-#include "lua.h"
-#include "lauxlib.h"
 
 
 void dump_stack (lua_State *L) {

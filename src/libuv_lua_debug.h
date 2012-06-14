@@ -16,4 +16,10 @@
 #endif /* DEBUG */
 
 
+#include "lua.h"
+
+
+void dump_stack (lua_State *L);
+
+
 #endif /* LIBUV_LUA__DEBUG_H */
