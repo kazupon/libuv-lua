@@ -8,7 +8,7 @@
 
 
 #ifdef DEBUG
-#define TRACE(fmt, ...)     do { fprintf(stderr, "%s: %d: %s: " fmt, __FILE__, __LINE__, __func__, __VA_ARGS__); } while (0)
+#define TRACE(fmt, ...)     do { fprintf(stderr, "%s: %d: %s: " fmt, __FILE__, __LINE__, __func__, ##__VA_ARGS__); } while (0)
 #define DUMP_STACK(lua)     do { dump_stack(lua); } while (0)
 #else
 #define TRACE(fmt, ...)     ((void)0)

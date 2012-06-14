@@ -12,7 +12,7 @@ void dump_stack (lua_State *L) {
   int i;
   int top = lua_gettop(L);
   printf("--------------- STACK ---------------\n");
-  for (i = 1; i <= top; i++) {
+  for (i = top; i >= 1; i--) {
     int t = lua_type(L, i);
     printf("Stack[%2d - %8s] : ", i, lua_typename(L, t));
     switch (t) {
