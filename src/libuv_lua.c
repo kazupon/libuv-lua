@@ -12,27 +12,43 @@
 #include "lua.h"
 #include "lauxlib.h"
 
+#include "libuv_lua_debug.h"
+#include "libuv_lua_loop.h"
+
 
 void debug_printf (const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    va_end(args);
+  va_list args;
+  va_start(args, fmt);
+  vfprintf(stderr, fmt, args);
+  va_end(args);
 }
+
 
 static int hello (lua_State *L) {
-    assert(L != NULL);
-    TRACE("%s %d\n", "hello", 1);
-    return 0;
+  assert(L != NULL);
+  TRACE("%s %d\n", "hello", 1);
+  return 0;
 }
 
+
 static const struct luaL_Reg libuv_bindings [] = {
-    { "hello", hello },
-    { NULL, NULL }, /* sentinail */
+  { "hello", hello },
+  { NULL, NULL }, /* sentinail */
 };
 
 int luaopen_libuvlua (lua_State *L) {
-    luaL_register(L, "libuvlua", libuv_bindings);
-    return 1;
+  int ret;
+  assert(L != NULL);
+
+  /* create a table for namespace */
+  lua_settop(L, 0); /* [ ] */
+  lua_newtable(L); /* [ table ] */
+  DUMP_STACK(L);
+
+  /* load event loop module */
+  ret = luaopenL_libuv_loop(L);
+
+  //luaL_register(L, "libuvlua", libuv_bindings);
+  return 1;
 }
 

@@ -14,6 +14,8 @@
     ],
     'sources': [
       'common.gypi',
+      'src/libuv_lua_debug.c',
+      'src/libuv_lua_loop.c',
       'src/libuv_lua.c',
     ],
     'defines': [
