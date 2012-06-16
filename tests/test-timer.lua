@@ -14,7 +14,7 @@ end
 local once = libuv.Timer.new(loop)
 assert(once, 'cannot create timer')
 
-local ret = once:start(once_cb, 10, false)
+local ret = once:start(once_cb, 10, 0)
 assert(ret == 0)
 
 assert(loop:run(), 'faild loop:run')

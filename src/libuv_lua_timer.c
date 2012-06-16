@@ -186,8 +186,8 @@ static int start_timer (lua_State *L) {
   assert(lua_gettop(L) >= 3); 
 
   /* get repeat argument */
-  if (lua_gettop(L) == 4 && lua_isboolean(L, -1)) {
-    repeat = (int64_t)lua_tonumber(L, -1);
+  if (lua_gettop(L) == 4) {
+    repeat = (int64_t)luaL_checklong(L, -1);
     lua_pop(L, 1);
     assert(lua_gettop(L) == 3);
   } else {
