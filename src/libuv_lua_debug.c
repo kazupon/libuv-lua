@@ -26,6 +26,16 @@ void dump_stack (lua_State *L) {
         printf("%g", lua_tonumber(L, i));
         break;
       case LUA_TNIL:
+        printf("nil");
+        break;
+      case LUA_TFUNCTION:
+        printf("function");
+        break;
+      case LUA_TTHREAD:
+        printf("thread");
+        break;
+      case LUA_TUSERDATA:
+        printf("userdata");
         break;
       default:
         printf("%s", lua_typename(L, t));

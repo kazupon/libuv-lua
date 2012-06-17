@@ -19,13 +19,12 @@ static libuv_loop_t libuv_default_loop;
 /* function(s) */
 
 static int new_loop (lua_State *L) {
-  libuv_loop_t *loop;
+  libuv_loop_t *loop = NULL;
 
-  TRACE("call 'new_loop' function\n");
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
   /* create libuv_loop_t */
-  loop = NULL;
   loop = (libuv_loop_t *)lua_newuserdata(L, sizeof(libuv_loop_t)); /* [ userdata ] */
   if (loop == NULL) {
     /* TODO: error */
@@ -42,6 +41,7 @@ static int new_loop (lua_State *L) {
   /* create event loop */
   loop->uvloop = NULL;
   loop->uvloop = uv_loop_new();
+  /* TODO: should be implemeted by uv_last_error */
   if (loop->uvloop == NULL) {
     /* TODO: error */
     return 0;
@@ -55,13 +55,12 @@ static int new_loop (lua_State *L) {
 }
 
 static int default_loop (lua_State *L) {
-  libuv_loop_t *loop;
+  libuv_loop_t *loop = NULL;
 
-  TRACE("call 'default_loop' function\n");
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
   lua_getfield(L, LUA_REGISTRYINDEX, DEFAULT_LOOP_T); /* [ userdata ] */
-  loop = NULL;
   loop = lua_touserdata(L, -1); /* [ userdata ] */
   if (loop == NULL) {
     /* TODO: error */
@@ -75,12 +74,11 @@ static int default_loop (lua_State *L) {
 }
 
 static int delete_loop (lua_State *L) {
-  libuv_loop_t *loop;
+  libuv_loop_t *loop = NULL;
 
-  TRACE("call 'delete_loop' function\n");
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
-  loop = NULL;
   loop = (libuv_loop_t *)luaL_checkudata(L, 1, LOOP_T);
   TRACE("get libuv_loop_t (%p)\n", loop);
   assert(loop != NULL);
@@ -90,6 +88,7 @@ static int delete_loop (lua_State *L) {
     if (loop->uvloop) {
       TRACE("deleting uv_loop_t (%p)\n", loop->uvloop);
       uv_loop_delete(loop->uvloop);
+      /* TODO: should be implemeted by uv_last_error */
     }
     loop->uvloop = NULL;
   } else {
@@ -100,14 +99,13 @@ static int delete_loop (lua_State *L) {
 }
 
 static int run_loop (lua_State *L) {
-  int ret;
-  libuv_loop_t *loop;
+  int ret = 0;
+  libuv_loop_t *loop = NULL;
 
-  TRACE("call 'run_loop' function\n");
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
   /* get first argument */
-  loop = NULL;
   loop = (libuv_loop_t *)luaL_checkudata(L, 1, LOOP_T); /* [ userdata ] */
   TRACE("get libuv_loop_t (%p)\n", loop);
   assert(loop != NULL);
@@ -115,6 +113,7 @@ static int run_loop (lua_State *L) {
 
   /* execute uv_run */
   ret = uv_run(loop->uvloop);
+  /* TODO: should be implemeted by uv_last_error */
   TRACE("uv_run: ret = %d\n", ret);
 
   /* set return */
@@ -124,14 +123,13 @@ static int run_loop (lua_State *L) {
 }
 
 static int run_once_loop (lua_State *L) {
-  int ret;
-  libuv_loop_t *loop;
+  int ret = 0;
+  libuv_loop_t *loop = NULL;
 
-  TRACE("call 'run_once_loop' function\n");
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
   /* get first argument */
-  loop = NULL;
   loop = (libuv_loop_t *)luaL_checkudata(L, 1, LOOP_T); /* [ userdata ] */
   TRACE("get libuv_loop_t (%p)\n", loop);
   assert(loop != NULL);
@@ -139,6 +137,7 @@ static int run_once_loop (lua_State *L) {
 
   /* execute uv_run_once */
   ret = uv_run(loop->uvloop);
+  /* TODO: should be implemeted by uv_last_error */
   TRACE("uv_run_once: ret = %d\n", ret);
 
   /* set return */
@@ -150,7 +149,7 @@ static int run_once_loop (lua_State *L) {
 static int update_time_loop (lua_State *L) {
   libuv_loop_t *loop;
 
-  TRACE("call 'update_time_loop' function\n");
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
   /* get first argument */
@@ -167,14 +166,13 @@ static int update_time_loop (lua_State *L) {
 }
 
 static int now_loop (lua_State *L) {
-  int ret;
-  libuv_loop_t *loop;
+  int ret = 0;
+  libuv_loop_t *loop = NULL;
 
-  TRACE("call 'now_loop' function\n");
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
   /* get first argument */
-  loop = NULL;
   loop = (libuv_loop_t *)luaL_checkudata(L, 1, LOOP_T); /* [ userdata ] */
   TRACE("get libuv_loop_t (%p)\n", loop);
   assert(loop != NULL);
@@ -182,6 +180,7 @@ static int now_loop (lua_State *L) {
 
   /* execute uv_now */
   ret = uv_now(loop->uvloop); // TODO: upcast?? 
+  /* TODO: should be implemeted by uv_last_error */
   TRACE("uv_now: ret = %d\n", ret);
 
   /* set return */
@@ -201,27 +200,20 @@ static const struct luaL_Reg libuv_loop_methods [] = {
 
 
 LUALIB_API int luaopen_libuv_loop (lua_State *L) {
+
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
-//  /* create meta table */
-//  luaL_newmetatable(L, LOOP_T);
-//
-//  /* metatable.__index = metatable */
-//  lua_pushvalue(L, -1);
-//  lua_setfield(L, -2, "__index");
-//
-//  /* regist methods */
-//  luaL_register(L, NULL, libuv_loop_methods);
-//
-//  /* regist functions */
-//  luaL_register(L, "Loop", libuv_loop_functions);
+  assert(0);
 
   return 1;
 }
 
 LUALIB_API int luaopenL_libuv_loop (lua_State *L) {
   int size = 0;
-  uv_loop_t *def_loop;
+  uv_loop_t *def_loop = NULL;
+
+  TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
 
   /* check stack size & type check ([ table ]) */
