@@ -28,8 +28,8 @@ static void on_close_uv_timer_handle (uv_handle_t *handle) {
 
   timer = (libuv_timer_t *)handle->data;
   L = timer->L;
+
   luaL_unref(L, LUA_REGISTRYINDEX, timer->ref);
-  timer->ref_count = 0;
   timer->ref = LUA_NOREF;
   timer->uvtimer->data = NULL;
   TRACE("free uv_timer_t\n");
@@ -43,12 +43,11 @@ static void on_timer (uv_timer_t *handle, int status) {
   libuv_timer_t *timer = NULL;
 
   assert(handle != NULL);
-  assert(!uv_is_active((uv_handle_t *)handle));
   TRACE("arguments: handle = %p, status = %d\n", handle, status);
   
   timer = (libuv_timer_t *)handle->data;
   assert(timer != NULL);
-  TRACE("libuv_timer_t attributes: uvtimer = %p, L = %p, ref = 0x%012x, ref_count = %d\n", timer->uvtimer, timer->L, timer->ref, timer->ref_count);
+  TRACE("libuv_timer_t attributes: uvtimer = %p, L = %p, ref = 0x%012x\n", timer->uvtimer, timer->L, timer->ref);
 
   L = timer->L;
   assert(L != NULL);
@@ -67,11 +66,10 @@ static void on_timer (uv_timer_t *handle, int status) {
     return;
   }
 
-  lua_pushinteger(L, status); /* [ userdata, userdata, env_table, function, number ] */
-
-  lua_call(L, 1, 0);
-
-  timer->ref_count--;
+  lua_pushvalue(L, 2); /* [ userdata, userdata, env_table, function, userdata ] */
+  lua_pushinteger(L, status); /* [ userdata, userdata, env_table, function, userdata, number ] */
+  lua_call(L, 2, 0);
+  lua_settop(L, 1);
 }
 
 static int new_timer (lua_State *L) {
@@ -119,7 +117,6 @@ static int new_timer (lua_State *L) {
   timer->uvtimer = uvtimer;
   timer->L = L;
   timer->ref = LUA_NOREF;
-  timer->ref_count = 0;
 
   /* set envriment table to userdata */
   lua_newtable(L); /* [ userdata, table ] */
@@ -151,21 +148,15 @@ static int delete_timer (lua_State *L) {
 
   timer = (libuv_timer_t *)luaL_checkudata(L, 1, TIMER_T); /* [ userdata ] */
   assert(timer != NULL);
-  TRACE("libuv_timer_t attributes: uvtimer = %p, L = %p, ref = 0x%012x, ref_count = %d\n", timer->uvtimer, timer->L, timer->ref, timer->ref_count);
-
-  if (!timer->ref_count & (timer->ref != LUA_NOREF)) {
-    TRACE("unreference uv_timer_t\n");
-    luaL_unref(L, LUA_REGISTRYINDEX, timer->ref);
-    timer->ref = LUA_NOREF;
-    timer->uvtimer->data = NULL;
-    TRACE("free uv_timer_t\n");
-    free(timer->uvtimer);
-    timer->uvtimer = NULL;
-  }
+  TRACE("libuv_timer_t attributes: uvtimer = %p, L = %p, ref = 0x%012x\n", timer->uvtimer, timer->L, timer->ref);
 
   if (timer->uvtimer) {
-    fprintf(stderr, "WARNING: foget to close\n");
-    uv_close(timer->uvtimer, on_close_uv_timer_handle);
+    TRACE("release uv_timer_t\n");
+    uv_close((uv_handle_t *)timer->uvtimer, on_close_uv_timer_handle);
+  } else {
+    TRACE("already realeased uv_timer_t\n");
+    assert(timer->uvtimer == NULL);
+    assert(timer->ref == LUA_NOREF);
   }
 
   return 0;
@@ -223,19 +214,16 @@ static int start_timer (lua_State *L) {
   TRACE("uv_timer_start: ret = %d\n", ret);
 
   /* set reference */
-  if (!timer->ref_count) {
-    ref_ret = luaL_ref(L, LUA_REGISTRYINDEX);
-    if (ref_ret == LUA_REFNIL) {
-      /* TODO: error */
-      fprintf(stderr, "FAIELD luaL_ref !!");
-      return 0;
-    }
-    timer->ref = ref_ret;
+  TRACE("referencing uv_timer_t\n");
+  ref_ret = luaL_ref(L, LUA_REGISTRYINDEX);
+  if (ref_ret == LUA_REFNIL) {
+    /* TODO: error */
+    fprintf(stderr, "FAIELD luaL_ref !!");
+    return 0;
   }
-  timer->ref_count++;
-  assert(timer->ref != LUA_NOREF);
+  timer->ref = ref_ret;
 
-  TRACE("libuv_timer_t attributes: uvtimer = %p, L = %p, ref = 0x%012x, ref_count = %d\n", timer->uvtimer, timer->L, timer->ref, timer->ref_count);
+  TRACE("libuv_timer_t attributes: uvtimer = %p, L = %p, ref = 0x%012x\n", timer->uvtimer, timer->L, timer->ref);
 
   /* set return */
   lua_pushinteger(L, ret); /* [ userdata, number ] */
@@ -243,10 +231,45 @@ static int start_timer (lua_State *L) {
   return 1;
 }
 
+static int stop_timer (lua_State *L) {
+  int ret = 0;
+  libuv_timer_t *timer = NULL;
+
+  TRACE("arguments: L = %p\n", L);
+  assert(L != NULL);
+  /* [ userdata ] */
+
+  /* TODO: check argument count */
+  assert(lua_gettop(L) == 1); 
+
+  /* get self argument */
+  timer = (libuv_timer_t *)luaL_checkudata(L, 1, TIMER_T);
+  TRACE("get libuv_timer_t (%p)\n", timer);
+  assert(timer != NULL);
+  assert(timer->uvtimer != NULL);
+
+  /* execute uv_timer_stop */
+  ret = uv_timer_stop(timer->uvtimer);
+  TRACE("uv_timer_stop: ret = %d\n", ret);
+
+  /* set reference */
+  TRACE("unreference uv_timer_t\n");
+  luaL_unref(L, LUA_REGISTRYINDEX, timer->ref);
+  timer->ref = LUA_NOREF;
+
+  TRACE("libuv_timer_t attributes: uvtimer = %p, L = %p, ref = 0x%012x\n", timer->uvtimer, timer->L, timer->ref);
+
+  /* set return */
+  lua_pushinteger(L, ret); /* [ userdata, number ] */
+
+  return 1;
+}
 
 static const struct luaL_Reg libuv_timer_methods [] = {
   { "__gc", delete_timer },
+  { "close", delete_timer },
   { "start", start_timer },
+  { "stop", stop_timer },
   { NULL, NULL }, /* sentinail */
 };
 

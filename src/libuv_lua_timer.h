@@ -17,7 +17,6 @@ typedef struct libuv_timer_t {
   uv_timer_t *uvtimer;
   lua_State *L;
   int ref;
-  int ref_count;
 } libuv_timer_t;
 
 
