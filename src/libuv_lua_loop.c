@@ -179,7 +179,7 @@ static int now_loop (lua_State *L) {
   assert(loop->uvloop != NULL);
 
   /* execute uv_now */
-  ret = uv_now(loop->uvloop); // TODO: upcast?? 
+  ret = uv_now(loop->uvloop); /* TODO: upcast?? */
   /* TODO: should be implemeted by uv_last_error */
   TRACE("uv_now: ret = %d\n", ret);
 
