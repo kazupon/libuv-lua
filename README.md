@@ -1,18 +1,27 @@
 # libuv-lua
 libuv lua binding
 
-# Installation
 
-    $ ./configure
+# Requirements
+
+- lua >= 5.1.3
+- python >= 2.6
+
+
+# Building
+
+    $ ./configure --shared-lua --shared-lua-includes=SHARED_LUA_INCLUDES --shared-lua-libpath=SHARED_LUA_LIBPATH --arch=ARCH
     $ make -C out
 
-# Example
+## Building Options
+
+   $ ./configure --help
 
 
 # License
 
-- libuv-lua
+## libuv-lua
 [MIT license](http://www.opensource.org/licenses/mit-license.php).
 
-- libuv
+## libuv
 See deps/libuv/LICENSE file.
