@@ -14,6 +14,7 @@
 
 #include "libuv_lua_debug.h"
 #include "libuv_lua_loop.h"
+#include "libuv_lua_errors.h"
 #include "libuv_lua_timer.h"
 
 
@@ -28,12 +29,21 @@ void debug_printf (const char *fmt, ...) {
 int luaopen_libuvlua (lua_State *L) {
   /* [ string ] */
 
-  int ret;
+  int ret = 0;
   assert(L != NULL);
 
   /* create a table for namespace */
   lua_settop(L, 0); /* [ ] */
   lua_newtable(L); /* [ table ] */
+
+  /* load errors module */
+  ret = luaopenL_libuv_errors(L);
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.Errors error");
+    lua_error(L);
+    return 0;
+  }
 
   /* load event loop module */
   ret = 0;
