@@ -189,12 +189,60 @@ static int now_loop (lua_State *L) {
   return 1;
 }
 
+static int get_last_err_code (lua_State *L) {
+  libuv_loop_t *loop = NULL;
+  uv_err_t err;
+
+  TRACE("arguments: L = %p\n", L);
+  assert(L != NULL);
+
+  /* get first argument */
+  loop = (libuv_loop_t *)luaL_checkudata(L, 1, LOOP_T); /* [ userdata ] */
+  TRACE("get libuv_loop_t (%p)\n", loop);
+  assert(loop != NULL);
+  assert(loop->uvloop != NULL);
+
+  /* execute uv_last_error */
+  err = uv_last_error(loop->uvloop);
+  TRACE("uv_last_error: code = %d\n", err.code);
+  
+  /* set return */
+  lua_pushinteger(L, err.code); /* [ userdata, number ] */
+
+  return 1;
+}
+
+static int get_last_err_msg (lua_State *L) {
+  libuv_loop_t *loop = NULL;
+  const char *err_msg = NULL;
+
+  TRACE("arguments: L = %p\n", L);
+  assert(L != NULL);
+
+  /* get first argument */
+  loop = (libuv_loop_t *)luaL_checkudata(L, 1, LOOP_T); /* [ userdata ] */
+  TRACE("get libuv_loop_t (%p)\n", loop);
+  assert(loop != NULL);
+  assert(loop->uvloop != NULL);
+
+  /* execute uv_last_error & uv_strerror  */
+  err_msg = uv_strerror(uv_last_error(loop->uvloop));
+  TRACE("uv_strerror: msg = %s\n", err_msg);
+  
+  /* set return */
+  lua_pushstring(L, err_msg); /* [ userdata, string ] */
+
+  return 1;
+}
+
 static const struct luaL_Reg libuv_loop_methods [] = {
   { "__gc", delete_loop },
   { "run", run_loop },
   { "run_once", run_once_loop },
   { "update_time", update_time_loop },
   { "now", now_loop },
+  { "last_err_code", get_last_err_code },
+  { "last_err_msg", get_last_err_msg },
   { NULL, NULL }, /* sentinail */
 };
 
