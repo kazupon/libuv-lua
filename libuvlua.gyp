@@ -80,6 +80,7 @@
           'tests/test-timer.lua',
           'tests/test-timer-twice.lua',
           'tests/test-timer-multi.lua',
+          'tests/test-timer-again.lua',
           'tests/test-ping-pong.lua',
         ],
       },
