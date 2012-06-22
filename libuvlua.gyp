@@ -19,6 +19,7 @@
       'src/libuv_lua_loop.c',
       'src/libuv_lua_errors.c',
       'src/libuv_lua_timer.c',
+      'src/libuv_lua_idle.c',
       'src/libuv_lua.c',
     ],
     'defines': [
@@ -81,6 +82,8 @@
           'tests/test-timer-twice.lua',
           'tests/test-timer-multi.lua',
           'tests/test-timer-again.lua',
+          'tests/test-idle.lua',
+          'tests/test-callback-order.lua',
           'tests/test-ping-pong.lua',
         ],
       },

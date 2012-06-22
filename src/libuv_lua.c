@@ -16,6 +16,7 @@
 #include "libuv_lua_loop.h"
 #include "libuv_lua_errors.h"
 #include "libuv_lua_timer.h"
+#include "libuv_lua_idle.h"
 
 
 void debug_printf (const char *fmt, ...) {
@@ -61,6 +62,16 @@ int luaopen_libuvlua (lua_State *L) {
   if (ret) {
     /* TODO: should be error */
     lua_pushstring(L, "load libvu.timer error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load idle event moudle */
+  ret = 0;
+  ret = luaopenL_libuv_idle(L); /* [ table ] */
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.idle error");
     lua_error(L);
     return 0;
   }
