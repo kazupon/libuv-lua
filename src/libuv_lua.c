@@ -13,6 +13,7 @@
 #include "lauxlib.h"
 
 #include "libuv_lua_debug.h"
+#include "libuv_lua_mutex.h"
 #include "libuv_lua_loop.h"
 #include "libuv_lua_errors.h"
 #include "libuv_lua_timer.h"
@@ -43,6 +44,15 @@ int luaopen_libuvlua (lua_State *L) {
   if (ret) {
     /* TODO: should be error */
     lua_pushstring(L, "load libvu.Errors error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load mutex moudle */
+  ret = luaopenL_libuv_mutex(L);
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.Mutex error");
     lua_error(L);
     return 0;
   }
