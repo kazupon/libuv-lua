@@ -16,6 +16,9 @@
 #include "libuv_lua_loop.h"
 #include "libuv_lua_errors.h"
 #include "libuv_lua_timer.h"
+#include "libuv_lua_idle.h"
+#include "libuv_lua_check.h"
+#include "libuv_lua_prepare.h"
 
 
 void debug_printf (const char *fmt, ...) {
@@ -24,7 +27,6 @@ void debug_printf (const char *fmt, ...) {
   vfprintf(stderr, fmt, args);
   va_end(args);
 }
-
 
 int luaopen_libuvlua (lua_State *L) {
   /* [ string ] */
@@ -61,6 +63,36 @@ int luaopen_libuvlua (lua_State *L) {
   if (ret) {
     /* TODO: should be error */
     lua_pushstring(L, "load libvu.timer error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load idle event moudle */
+  ret = 0;
+  ret = luaopenL_libuv_idle(L); /* [ table ] */
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.idle error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load check event moudle */
+  ret = 0;
+  ret = luaopenL_libuv_check(L); /* [ table ] */
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.check error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load prepare event moudle */
+  ret = 0;
+  ret = luaopenL_libuv_prepare(L); /* [ table ] */
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.prepare error");
     lua_error(L);
     return 0;
   }

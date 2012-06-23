@@ -8,6 +8,8 @@
 /* other include(s) */
 #include <assert.h>
 #include <stdlib.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 #include "libuv_lua_loop.h"
 
 /* define(s) */
@@ -25,6 +27,11 @@ static void on_close_uv_timer_handle (uv_handle_t *handle) {
 
   assert(handle != NULL);
   TRACE("arguments: handle = %p\n", handle);
+
+  if (handle->data == NULL) {
+    TRACE("not start timer\n");
+    return;
+  }
 
   timer = (libuv_timer_t *)handle->data;
   L = timer->L;
@@ -184,7 +191,7 @@ static int start_timer (lua_State *L) {
   } else {
     repeat = 0;
   }
-  TRACE("repeat = %d\n", repeat); 
+  TRACE("repeat = %" PRId64 "\n", repeat); 
 
   /* [ userdata, function, number ] */
   /* get timeout argument */
@@ -237,9 +244,8 @@ static int stop_timer (lua_State *L) {
 
   TRACE("arguments: L = %p\n", L);
   assert(L != NULL);
-  /* [ userdata ] */
 
-  /* TODO: check argument count */
+  /* [ userdata ] */
   assert(lua_gettop(L) == 1); 
 
   /* get self argument */
@@ -265,11 +271,102 @@ static int stop_timer (lua_State *L) {
   return 1;
 }
 
+static int again_timer (lua_State *L) {
+  int ret = 0;
+  libuv_timer_t *timer = NULL;
+  libuv_timer_t *target_timer = NULL;
+
+  TRACE("arguments: L = %p\n", L);
+  assert(L != NULL);
+
+  /* [ userdata userdata ] */
+  assert(lua_gettop(L) == 2); 
+
+  /* get target timer */
+  target_timer = (libuv_timer_t *)luaL_checkudata(L, 2, TIMER_T);
+  TRACE("get target libuv_timer_t (%p)\n", target_timer);
+  assert(target_timer != NULL);
+  assert(target_timer->uvtimer != NULL);
+
+  /* get self argument */
+  timer = (libuv_timer_t *)luaL_checkudata(L, 1, TIMER_T);
+  TRACE("get libuv_timer_t (%p)\n", timer);
+  assert(timer != NULL);
+  assert(timer->uvtimer != NULL);
+
+  /* execute uv_timer_get_repeat */
+  ret = uv_timer_again(target_timer->uvtimer);
+  TRACE("uv_timer_again: ret = %d\n", ret);
+
+  /* set return */
+  lua_pushinteger(L, ret); /* [ userdata, number ] */
+
+  return 1;
+}
+
+static int get_repeat_timer (lua_State *L) {
+  int64_t ret = 0;
+  libuv_timer_t *timer = NULL;
+
+  TRACE("arguments: L = %p\n", L);
+  assert(L != NULL);
+
+  /* [ userdata ] */
+  assert(lua_gettop(L) == 1); 
+
+  /* get self argument */
+  timer = (libuv_timer_t *)luaL_checkudata(L, 1, TIMER_T);
+  TRACE("get libuv_timer_t (%p)\n", timer);
+  assert(timer != NULL);
+  assert(timer->uvtimer != NULL);
+
+  /* execute uv_timer_get_repeat */
+  ret = uv_timer_get_repeat(timer->uvtimer);
+  TRACE("uv_timer_get_repeat: ret = %" PRId64 "\n", ret);
+
+  /* set return */
+  lua_pushinteger(L, ret); /* [ userdata, number ] */
+
+  return 1;
+}
+
+static int set_repeat_timer (lua_State *L) {
+  int64_t repeat = 0;
+  libuv_timer_t *timer = NULL;
+
+  TRACE("arguments: L = %p\n", L);
+  assert(L != NULL);
+
+  /* [ userdata, number ] */
+  assert(lua_gettop(L) == 2); 
+
+  /* get repeat argument */
+  repeat = (int64_t)luaL_checklong(L, -1);
+  lua_pop(L, 1);
+  assert(lua_gettop(L) == 1); /* [ userdata ] */
+  TRACE("repeat = %" PRId64 "\n", repeat);
+
+  /* get self argument */
+  timer = (libuv_timer_t *)luaL_checkudata(L, 1, TIMER_T);
+  TRACE("get libuv_timer_t (%p)\n", timer);
+  assert(timer != NULL);
+  assert(timer->uvtimer != NULL);
+
+  /* execute uv_timer_set_repeat */
+  uv_timer_set_repeat(timer->uvtimer, repeat);
+  TRACE("execute uv_timer_set_repeat\n");
+
+  return 0;
+}
+
 static const struct luaL_Reg libuv_timer_methods [] = {
   { "__gc", delete_timer },
   { "close", delete_timer },
   { "start", start_timer },
   { "stop", stop_timer },
+  { "again", again_timer },
+  { "get_repeat", get_repeat_timer },
+  { "set_repeat", set_repeat_timer },
   { NULL, NULL }, /* sentinail */
 };
 
