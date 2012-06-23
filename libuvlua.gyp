@@ -17,6 +17,7 @@
       'src/libuv_lua_debug.c',
       'src/libuv_lua_utils.c',
       'src/libuv_lua_mutex.c',
+      'src/libuv_lua_rwlock.c',
       'src/libuv_lua_loop.c',
       'src/libuv_lua_errors.c',
       'src/libuv_lua_timer.c',
@@ -80,6 +81,7 @@
         'destination': '<(PRODUCT_DIR)',
         'files': [
           'tests/test-mutex.lua',
+          'tests/test-rwlock.lua',
           'tests/test-loop.lua',
           'tests/test-error-codes.lua',
           'tests/test-timer.lua',
