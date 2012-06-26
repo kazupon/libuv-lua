@@ -13,12 +13,16 @@
 #include "lauxlib.h"
 
 #include "libuv_lua_debug.h"
+#include "libuv_lua_mutex.h"
+#include "libuv_lua_rwlock.h"
+#include "libuv_lua_thread.h"
 #include "libuv_lua_loop.h"
 #include "libuv_lua_errors.h"
 #include "libuv_lua_timer.h"
 #include "libuv_lua_idle.h"
 #include "libuv_lua_check.h"
 #include "libuv_lua_prepare.h"
+#include "libuv_lua_task.h"
 
 
 void debug_printf (const char *fmt, ...) {
@@ -43,6 +47,33 @@ int luaopen_libuvlua (lua_State *L) {
   if (ret) {
     /* TODO: should be error */
     lua_pushstring(L, "load libvu.Errors error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load mutex moudle */
+  ret = luaopenL_libuv_mutex(L);
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.Mutex error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load rwlock moudle */
+  ret = luaopenL_libuv_rwlock(L);
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.RWLock error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load thread moudle */
+  ret = luaopenL_libuv_thread(L);
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.Thread error");
     lua_error(L);
     return 0;
   }
@@ -93,6 +124,16 @@ int luaopen_libuvlua (lua_State *L) {
   if (ret) {
     /* TODO: should be error */
     lua_pushstring(L, "load libvu.prepare error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load task moudle */
+  ret = 0;
+  ret = luaopenL_libuv_task(L); /* [ table ] */
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.task error");
     lua_error(L);
     return 0;
   }

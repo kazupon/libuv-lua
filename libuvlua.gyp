@@ -14,14 +14,19 @@
     ],
     'sources': [
       'common.gypi',
+      'src/mp.c',
       'src/libuv_lua_debug.c',
       'src/libuv_lua_utils.c',
+      'src/libuv_lua_mutex.c',
+      'src/libuv_lua_rwlock.c',
+      'src/libuv_lua_thread.c',
       'src/libuv_lua_loop.c',
       'src/libuv_lua_errors.c',
       'src/libuv_lua_timer.c',
       'src/libuv_lua_idle.c',
       'src/libuv_lua_check.c',
       'src/libuv_lua_prepare.c',
+      'src/libuv_lua_task.c',
       'src/libuv_lua.c',
     ],
     'defines': [
@@ -78,6 +83,9 @@
       {
         'destination': '<(PRODUCT_DIR)',
         'files': [
+          'tests/test-mutex.lua',
+          'tests/test-rwlock.lua',
+          'tests/test-thread.lua',
           'tests/test-loop.lua',
           'tests/test-error-codes.lua',
           'tests/test-timer.lua',
@@ -87,6 +95,7 @@
           'tests/test-idle.lua',
           'tests/test-callback-order.lua',
           'tests/test-loop-handlers.lua',
+          'tests/test-thread-pool.lua',
           'tests/test-ping-pong.lua',
         ],
       },

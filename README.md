@@ -18,10 +18,3 @@ libuv lua binding
    $ ./configure --help
 
 
-# License
-
-## libuv-lua
-[MIT license](http://www.opensource.org/licenses/mit-license.php).
-
-## libuv
-See deps/libuv/LICENSE file.
