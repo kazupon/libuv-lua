@@ -22,6 +22,7 @@
 #include "libuv_lua_idle.h"
 #include "libuv_lua_check.h"
 #include "libuv_lua_prepare.h"
+#include "libuv_lua_task.h"
 
 
 void debug_printf (const char *fmt, ...) {
@@ -123,6 +124,16 @@ int luaopen_libuvlua (lua_State *L) {
   if (ret) {
     /* TODO: should be error */
     lua_pushstring(L, "load libvu.prepare error");
+    lua_error(L);
+    return 0;
+  }
+
+  /* load task moudle */
+  ret = 0;
+  ret = luaopenL_libuv_task(L); /* [ table ] */
+  if (ret) {
+    /* TODO: should be error */
+    lua_pushstring(L, "load libvu.task error");
     lua_error(L);
     return 0;
   }

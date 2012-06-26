@@ -14,6 +14,7 @@
     ],
     'sources': [
       'common.gypi',
+      'src/mp.c',
       'src/libuv_lua_debug.c',
       'src/libuv_lua_utils.c',
       'src/libuv_lua_mutex.c',
@@ -25,6 +26,7 @@
       'src/libuv_lua_idle.c',
       'src/libuv_lua_check.c',
       'src/libuv_lua_prepare.c',
+      'src/libuv_lua_task.c',
       'src/libuv_lua.c',
     ],
     'defines': [
@@ -93,6 +95,7 @@
           'tests/test-idle.lua',
           'tests/test-callback-order.lua',
           'tests/test-loop-handlers.lua',
+          'tests/test-thread-pool.lua',
           'tests/test-ping-pong.lua',
         ],
       },
